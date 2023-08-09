@@ -1,5 +1,6 @@
 .DS_Store
 **/*.zip
 **/node_modules
-**/__pycache__
+**/__pycache__/*.pyc
+**/__pycache__/**
 **/*.swp

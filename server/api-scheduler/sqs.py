@@ -43,7 +43,7 @@ def receiveAndProcess():
             for message in messages:
                 try:
                     # 处理消息
-                    process_message(message['Body'])
+                    #process_message(message['Body'])
                     # 从队列中 删除消息
                     sqs.delete_message(
                         QueueUrl=queue_url,
