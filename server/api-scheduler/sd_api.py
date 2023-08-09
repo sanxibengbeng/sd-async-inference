@@ -7,7 +7,6 @@ import sd_s3
 
 # webui_api_url
 webui_api_url = "http://127.0.0.1:7860"
-webui_api_url = "http://ec2-13-250-5-36.ap-southeast-1.compute.amazonaws.com:7860"
 
 def process_sd_request(taskId, taskInfo):
     task = json.loads(taskInfo)
