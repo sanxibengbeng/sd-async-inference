@@ -30,20 +30,19 @@ const queryDynamoDb = async (taskId) => {
 
 export const handler = async (event) => {
   //query user in DB
-  const body = JSON.parse(event.body);
-  console.log(body);
-  let taskInfo = await queryDynamoDb(body.taskId);
+  const taskId = event.queryStringParameters.taskId
+  let taskInfo = await queryDynamoDb(taskId);
 
   let response = {}
   if (!taskInfo) {
     response = {
       statusCode: 404,
-      taskInfo: null,
+      body: "no valid task"
     }
   } else {
     response = {
       statusCode: 200,
-      taskInfo: taskInfo
+      body: JSON.stringify(taskInfo)
     }
   }
   return response

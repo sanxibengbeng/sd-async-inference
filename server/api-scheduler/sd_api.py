@@ -5,17 +5,16 @@ import base64
 from PIL import Image, PngImagePlugin
 import sd_s3
 
-# todo 1. get task from SQS
-# todo 2. call api
-# todo 3. save image to S3
-# todo 4. save result to DynamoDB
-# todo 5. while do
-
 # webui_api_url
 webui_api_url = "http://127.0.0.1:7860"
+webui_api_url = "http://ec2-13-250-5-36.ap-southeast-1.compute.amazonaws.com:7860"
 
+def process_sd_request(taskId, taskInfo):
+    task = json.loads(taskInfo)
+    res = call_simple_api(task["api"], task["payload"], f"sd/out/{taskId}")
+    return res
 
-def process_sd_request(api, payload, imagekey):
+def call_simple_api(api, payload, imagekey):
     imageList = []
     res = {"cnt":0, "images":[], "error": ""}
     cnt = 0

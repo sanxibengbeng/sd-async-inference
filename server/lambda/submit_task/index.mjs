@@ -20,12 +20,12 @@ export const handler = async (event) => {
         Item: {
             'taskId': { S: taskId },
             'requestData': { S: event.body },
-            'status': { S: 'waiting' },
-            'timestamp': { S: new Date().toISOString() }
+            'taskStatus': { S: 'waiting' },
+            'submitTime': { S: new Date().toISOString() }
         }
     };
 
-    taskInfo = {
+    let taskInfo = {
         taskId: taskId,
         storage: "dynamodb"
     }
@@ -47,12 +47,13 @@ export const handler = async (event) => {
 
         response = {
             statusCode: 200,
-            taskId: taskId
+            body:JSON.stringify({"taskId":taskId})
         };
     }catch(err){
         console.error(err)
         response = {
-            statusCode: 500,
+            statusCode: 400,
+            body:err
          };
     }
     return response;
