@@ -3,4 +3,5 @@
 **/node_modules
 **/__pycache__/*.pyc
 **/__pycache__/**
-**/*.swp
+*.swp
+config.ini
