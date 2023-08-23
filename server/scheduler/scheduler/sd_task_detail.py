@@ -1,5 +1,5 @@
 import json
-import scheduler.sd_dynamodb
+import scheduler.sd_dynamodb as sd_dynamodb
 
 def get(message):
     info = json.loads(message)

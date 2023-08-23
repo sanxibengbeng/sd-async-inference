@@ -1,9 +1,9 @@
 import boto3
 import os
 
-import scheduler.sd_api
-import scheduler.sd_task_detail
-import scheduler.sd_dynamodb
+import scheduler.sd_api as sd_api
+import scheduler.sd_task_detail as sd_task_detail
+import scheduler.sd_dynamodb as sd_dynamodb
 
 from scheduler.conf import schedulerConfig
 

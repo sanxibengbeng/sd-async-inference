@@ -4,7 +4,7 @@ import io
 import base64
 from PIL import Image, PngImagePlugin
 
-import scheduler.sd_s3
+import scheduler.sd_s3 as sd_s3
 
 # webui_api_url
 webui_api_url = "http://127.0.0.1:7860"
