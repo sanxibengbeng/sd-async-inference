@@ -9,11 +9,15 @@ submit_task 主要提供实现接收客户端提交的任务的能力。主要�
    ``` bash
    cd server/lambda/submit_task 
    npm install
-   zip -r submit_task.zip
+   zip -r submit_task.zip ./*
    ```
 1. 在 AWS console, 创建名为 ***submit_task*** 的Lambda function 
-    > 如果是在Mac M1/M2 芯片机器上构建，则需要设置cpu架构为arm64
+    重点关注：
+    > 如果是在Mac M1/M2 芯片机器上构建，则需要设置cpu架构为arm64 
 
 2. 将submit_task.zip 上传到lambda
-
-4. 配置API Gateway 转发请求到lambda
+3. 配置环境变量：
+   1) QUEUE_URL  : SQS 的URL, 任务提交的目标
+   3) DYNAMODB_TABLE ： 表名，如果不配置，默认是sd_tasks
+4. 配置权限：在 Lambda IAM Role里授予DynamoDB的写入权限 及 SQS的写入权限
+5. 配置API Gateway 转发请求到lambda

@@ -36,16 +36,17 @@
 
 ## 方案部署
 ### 前置准备
-1. 创建DynamoDB表
-2. 创建SQS任务队列
+1. 创建DynamoDB表 表名：sd_tasks， 分区键设置为 taskId 字符串 类型；
+2. 创建SQS任务队列，标准型即可；
 3. 创建S3 Bucket，并配置CloudFront；
 4. 创建IAM Role 并配置，授权给EC2实例访问SQS、DynamoDB、S3的权限；
 ### 一、应用服务部署，AWS Lambda 部署
-1. 通用部署步骤：
-   - 在本地安装Node.js
-   - 获取源码，并打包Lambda代码
-   - 上传Lambda代码并配置环境变量，修改IAM角色
-   - 创建并绑定API Gateway
+1. 部署APIGateWay，创建名为sdapi的APIGateway，并创建路由：
+   1）GET /task 用于获取任务详情
+   2）POST /task 用于提交任务
+2. 部署应用函数
+   1）[部署 submit_task](./server/lambda/submit_task/README.md)
+   2）[部署 task_info](./server/lambda/task_info/README.md)
 
 ### 二、GPU推理实例建设及推理池部署
 1. 在AWS EC2 上配置运行stablediffusion webui ，启动命令添加 --api参数
