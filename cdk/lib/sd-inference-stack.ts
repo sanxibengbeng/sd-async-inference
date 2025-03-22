@@ -54,10 +54,15 @@ export class SdInferenceStack extends cdk.Stack {
     });
 
     // Create CloudFront Distribution
+    const oai = new cloudfront.OriginAccessIdentity(this, 'SdImageOAI');
+    
+    // Grant the OAI read access to the bucket
+    imageBucket.grantRead(oai);
+    
     const distribution = new cloudfront.Distribution(this, 'SdImageDistribution', {
       defaultBehavior: {
-        origin: new origins.S3BucketOrigin(imageBucket, {
-          originAccessIdentity: new cloudfront.OriginAccessIdentity(this, 'SdImageOAI')
+        origin: new origins.S3Origin(imageBucket, {
+          originAccessIdentity: oai
         }),
         allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
