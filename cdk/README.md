@@ -1,0 +1,123 @@
+# Stable Diffusion 推理服务 CDK 部署
+
+这个项目使用 AWS CDK 来部署 Stable Diffusion 推理服务所需的基础设施，包括 API Gateway、Lambda、DynamoDB、SQS、S3 和 CloudFront。
+
+## 特点
+
+- **资源名称唯一化**: 每次部署都会生成唯一的资源名称，允许在同一个 AWS 账号中多次部署
+- **一键部署**: 提供简单的部署脚本，自动完成所有步骤
+- **完整基础设施**: 包含所有必要的 AWS 资源配置
+- **部署管理**: 提供部署、更新、列表和删除脚本，方便管理多个部署
+
+## 前置条件
+
+- Node.js (>= 14.x)
+- AWS CLI 已配置
+- AWS CDK 已安装 (`npm install -g aws-cdk`)
+- TypeScript (`npm install -g typescript`)
+- jq (用于列出部署，可选)
+
+## 部署管理脚本
+
+本项目提供了四个管理脚本，方便操作不同的部署：
+
+### 1. 部署新实例 (deploy.sh)
+
+```bash
+# 创建新部署（自动生成部署ID）
+./deploy.sh
+
+# 使用指定的部署ID创建部署
+./deploy.sh my-custom-id
+```
+
+部署完成后，部署ID会被保存到 `last_deployment_id.txt` 文件中。
+
+### 2. 更新现有部署 (update.sh)
+
+```bash
+# 更新上次部署的实例
+./update.sh
+
+# 更新指定部署ID的实例
+./update.sh deploy-123456
+```
+
+### 3. 列出所有部署 (list-deployments.sh)
+
+```bash
+./list-deployments.sh
+```
+
+这将显示所有部署的堆栈名称、创建时间和最后更新时间。
+
+### 4. 删除部署 (destroy.sh)
+
+```bash
+# 删除上次部署的实例
+./destroy.sh
+
+# 删除指定部署ID的实例
+./destroy.sh deploy-123456
+```
+
+## 手动部署步骤
+
+如果你想手动控制部署过程：
+
+1. 安装依赖
+
+```bash
+cd cdk
+npm install
+```
+
+2. 编译 TypeScript 代码
+
+```bash
+npm run build
+```
+
+3. 引导 CDK (如果是首次在此 AWS 账户/区域中使用 CDK)
+
+```bash
+cdk bootstrap
+```
+
+4. 部署堆栈（可以指定自定义的部署 ID）
+
+```bash
+cdk deploy --context deploymentId=my-custom-id
+```
+
+5. 确认部署
+
+部署过程中，CDK 会请求确认创建 IAM 角色和安全相关资源的权限，输入 'y' 确认。
+
+## 资源说明
+
+此 CDK 项目创建以下资源，所有资源名称都包含唯一的部署 ID：
+
+- **DynamoDB 表**: `sd-tasks-{deploymentId}` - 存储任务信息
+- **SQS 队列**: `sd-task-queue-{deploymentId}` - 用于存储待处理的推理任务
+- **S3 存储桶**: `sd-images-{deploymentId}-{accountId}` - 存储生成的图片
+- **CloudFront 分发**: 提供图片的快速访问
+- **Lambda 函数**:
+  - `SubmitTaskFunction` - 处理任务提交
+  - `TaskInfoFunction` - 查询任务状态
+- **API Gateway**: `sdapi-{deploymentId}` - 提供 REST API 接口
+  - POST /task: 提交任务
+  - GET /task?taskId={id}: 查询任务状态
+- **IAM 角色**: `sd-inference-ec2-role-{deploymentId}` - 为 EC2 推理实例提供所需权限
+
+## 多次部署
+
+由于所有资源名称都包含唯一标识符，你可以在同一个 AWS 账号中多次部署此堆栈。每次部署都会创建一组全新的资源，互不干扰。
+
+## 注意事项
+
+- 此部署仅包含基础设施部分，不包括 EC2 Spot Fleet 的配置和自动扩展部分
+- 生产环境中应调整资源的删除策略和安全设置
+- Lambda 函数代码需要从项目的 `server/lambda` 目录中获取
+- 所有脚本都会自动检测和使用 AWS CLI 配置的默认区域
+- 如果遇到 "You must specify a region" 错误，请运行 `aws configure` 设置默认区域

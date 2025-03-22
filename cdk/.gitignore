@@ -1,0 +1,25 @@
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Compiled TypeScript
+dist/
+
+# Deployment ID file
+last_deployment_id.txt
+
+# Mac OS
+.DS_Store
