@@ -122,27 +122,52 @@ cdk deploy --context deploymentId=my-custom-id
 - 所有脚本都会自动检测和使用 AWS CLI 配置的默认区域
 - 如果遇到 "You must specify a region" 错误，请运行 `aws configure` 设置默认区域
 
-## Node.js 版本要求
+## 环境设置
+
+### Node.js 版本要求
 
 AWS CDK 需要 Node.js v18 或 v20 版本。如果您使用的是较旧版本的 Node.js（如 v16），将会收到警告并可能导致部署问题。
 
-### 安装合适的 Node.js 版本
+### 快速设置
 
-推荐使用 nvm (Node Version Manager) 来管理 Node.js 版本：
+我们提供了一个自动化脚本来设置正确的 Node.js 环境：
 
-1. 安装 nvm:
+```bash
+# 设置 Node.js 环境
+./setup-node.sh
+
+# 修复安全漏洞
+./fix-vulnerabilities.sh
+```
+
+### 手动设置
+
+如果您想手动设置环境，请按照以下步骤操作：
+
+1. 安装 nvm (Node Version Manager):
 ```bash
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 ```
 
-2. 安装 Node.js v18:
+2. 加载 nvm (可能需要重新打开终端):
+```bash
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+```
+
+3. 安装 Node.js v18:
 ```bash
 nvm install 18
 ```
 
-3. 使用 Node.js v18:
+4. 使用 Node.js v18:
 ```bash
 nvm use 18
+```
+
+5. 设置为默认版本:
+```bash
+nvm alias default 18
 ```
 
 ### 自动版本检查
