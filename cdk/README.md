@@ -121,3 +121,20 @@ cdk deploy --context deploymentId=my-custom-id
 - Lambda 函数代码需要从项目的 `server/lambda` 目录中获取
 - 所有脚本都会自动检测和使用 AWS CLI 配置的默认区域
 - 如果遇到 "You must specify a region" 错误，请运行 `aws configure` 设置默认区域
+
+## 安全注意事项
+
+项目依赖中存在一些安全漏洞，主要来自于 AWS CDK 相关的库和其他依赖项。为了修复这些漏洞，可以运行提供的修复脚本：
+
+```bash
+cd cdk
+./fix-vulnerabilities.sh
+```
+
+这个脚本会：
+1. 更新 AWS CDK 相关依赖到最新版本
+2. 更新其他有漏洞的依赖
+3. 运行 npm audit fix 尝试自动修复
+4. 如果还有高危或严重漏洞，尝试强制修复
+
+请注意，强制更新可能会导致不兼容问题，更新后请确保项目仍然能够正常工作。
