@@ -55,7 +55,9 @@ export class SdInferenceStack extends cdk.Stack {
     // Create CloudFront Distribution
     const distribution = new cloudfront.Distribution(this, 'SdImageDistribution', {
       defaultBehavior: {
-        origin: new origins.S3Origin(imageBucket),
+        origin: new origins.S3BucketOrigin(imageBucket, {
+          originAccessIdentity: new cloudfront.OriginAccessIdentity(this, 'SdImageOAI')
+        }),
         allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
