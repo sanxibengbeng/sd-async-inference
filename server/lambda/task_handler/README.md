@@ -1,4 +1,4 @@
-# 合并任务处理器 Lambda 函数
+# 任务处理器 Lambda 函数
 
 这个 Lambda 函数整合了任务提交和任务查询功能，通过一个单一的函数处理两种不同的 API 请求。
 
@@ -15,39 +15,11 @@
 4. **一致的错误处理**: 统一的错误处理和响应格式
 5. **更容易维护**: 相关功能集中在一个文件中
 
-## 部署步骤
-
-1. 安装依赖:
-   ```bash
-   npm install
-   ```
-
-2. 打包 Lambda 函数:
-   ```bash
-   zip -r combined_task_handler.zip index.mjs node_modules package.json
-   ```
-
-3. 创建 Lambda 函数:
-   ```bash
-   aws lambda create-function \
-     --function-name combined-task-handler \
-     --runtime nodejs18.x \
-     --handler index.handler \
-     --zip-file fileb://combined_task_handler.zip \
-     --role <Lambda执行角色ARN> \
-     --environment Variables="{DYNAMODB_TABLE=sd_tasks,QUEUE_URL=<SQS队列URL>}"
-   ```
-
-4. 配置 API Gateway:
-   - 创建 API Gateway REST API
-   - 创建资源 `/task`
-   - 为该资源添加 GET 和 POST 方法
-   - 将两个方法都集成到同一个 Lambda 函数
-
 ## 环境变量
 
 - `DYNAMODB_TABLE`: DynamoDB 表名 (默认: "sd_tasks")
 - `QUEUE_URL`: SQS 队列 URL
+- `CLOUDFRONT_DOMAIN`: CloudFront 分配的域名，用于构建图片 URL
 
 ## 请求示例
 

@@ -1,6 +1,6 @@
 import { DynamoDBClient, PutItemCommand, GetItemCommand } from "@aws-sdk/client-dynamodb";
 import { SQSClient, SendMessageCommand } from "@aws-sdk/client-sqs";
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
 
 // 初始化客户端
 const dynamoClient = new DynamoDBClient();
@@ -9,6 +9,15 @@ const sqsClient = new SQSClient();
 // 从环境变量获取配置
 const TABLE_NAME = process.env.DYNAMODB_TABLE || 'sd_tasks';
 const QUEUE_URL = process.env.QUEUE_URL;
+const CLOUDFRONT_DOMAIN = process.env.CLOUDFRONT_DOMAIN;
+
+// 生成UUID v4
+function uuidv4() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
 
 /**
  * 提交新任务
@@ -111,6 +120,12 @@ const getTaskInfo = async (event) => {
         },
         body: JSON.stringify({ error: "任务不存在" })
       };
+    }
+
+    // 如果有图片结果，添加CloudFront域名
+    if (result.Item.imageUrl && CLOUDFRONT_DOMAIN) {
+      const imageKey = result.Item.imageUrl.S;
+      result.Item.imageUrl.S = `https://${CLOUDFRONT_DOMAIN}/${imageKey}`;
     }
 
     // 返回任务信息

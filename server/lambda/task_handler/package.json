@@ -1,12 +1,11 @@
 {
-  "name": "combined-task-handler",
+  "name": "task-handler",
   "version": "1.0.0",
   "description": "Combined Lambda function for handling task submission and retrieval",
   "main": "index.mjs",
   "type": "module",
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.400.0",
-    "@aws-sdk/client-sqs": "^3.400.0",
-    "uuid": "^9.0.0"
+    "@aws-sdk/client-sqs": "^3.400.0"
   }
 }

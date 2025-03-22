@@ -10,7 +10,7 @@
 ## 架构
   ![Architecture](assets/architecture.png)
 - 该方案利用Amazon API Gateway 接受客户端请求，并将请求转发到基于Lambda实现的后端服务；
-- AWS Lambda 中目前实现两个业务逻辑：提交任务和查询任务状态；
+- AWS Lambda 中实现一个业务逻辑：处理任务提交和查询任务状态；
 - Lambda接受任务后会将任务同时写入SQS 和 DynamoDB；
 - 基于Spot Fleet 实现的推理集群会从SQS中获取推理任务，完成推理，将结果计入S3，并将结果写回DynamoDB；
 - 图片结果存储到S3后，会提供cloudfront访问链接给用户；
@@ -45,8 +45,7 @@
    1）GET /task 用于获取任务详情
    2）POST /task 用于提交任务
 2. 部署应用函数
-   1）[部署 submit_task](./server/lambda/submit_task/README.md)
-   2）[部署 task_info](./server/lambda/task_info/README.md)
+   [部署 task_handler](./server/lambda/task_handler/README.md)
 
 ### 二、GPU推理实例建设及推理池部署
 1. 在AWS EC2 上配置运行stablediffusion webui ，启动命令添加 --api参数

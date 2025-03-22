@@ -62,34 +62,23 @@ export class SdInferenceStack extends cdk.Stack {
       },
     });
 
-    // Create Lambda functions
-    const submitTaskLambda = new lambda.Function(this, 'SubmitTaskFunction', {
+    // Create combined Lambda function for task handling
+    const taskHandlerLambda = new lambda.Function(this, 'TaskHandlerFunction', {
       runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '../../server/lambda/submit_task')),
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../server/lambda/task_handler')),
       timeout: cdk.Duration.seconds(30),
       environment: {
         DYNAMODB_TABLE: tasksTable.tableName,
         QUEUE_URL: taskQueue.queueUrl,
-      },
-    });
-
-    const taskInfoLambda = new lambda.Function(this, 'TaskInfoFunction', {
-      runtime: lambda.Runtime.NODEJS_18_X,
-      handler: 'index.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '../../server/lambda/task_info')),
-      timeout: cdk.Duration.seconds(30),
-      environment: {
-        DYNAMODB_TABLE: tasksTable.tableName,
         CLOUDFRONT_DOMAIN: distribution.distributionDomainName,
       },
     });
 
     // Grant permissions
-    tasksTable.grantReadWriteData(submitTaskLambda);
-    tasksTable.grantReadData(taskInfoLambda);
-    taskQueue.grantSendMessages(submitTaskLambda);
-    imageBucket.grantRead(taskInfoLambda);
+    tasksTable.grantReadWriteData(taskHandlerLambda);
+    taskQueue.grantSendMessages(taskHandlerLambda);
+    imageBucket.grantRead(taskHandlerLambda);
 
     // Create API Gateway with unique name
     const api = new apigateway.RestApi(this, 'SdApi', {
@@ -107,11 +96,9 @@ export class SdInferenceStack extends cdk.Stack {
     // Create API resources and methods
     const taskResource = api.root.addResource('task');
     
-    // POST /task - Submit task
-    taskResource.addMethod('POST', new apigateway.LambdaIntegration(submitTaskLambda));
-    
-    // GET /task?taskId={id} - Get task info
-    taskResource.addMethod('GET', new apigateway.LambdaIntegration(taskInfoLambda));
+    // POST /task - Submit task and GET /task - Get task info
+    taskResource.addMethod('POST', new apigateway.LambdaIntegration(taskHandlerLambda));
+    taskResource.addMethod('GET', new apigateway.LambdaIntegration(taskHandlerLambda));
 
     // Create IAM Role for EC2 instances with unique name
     const ec2Role = new iam.Role(this, 'SdInferenceEc2Role', {
