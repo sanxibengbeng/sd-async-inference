@@ -48,6 +48,13 @@ if [ -z "$AWS_REGION" ]; then
     exit 1
 fi
 
+# 检查堆栈是否存在
+STACK_NAME="SdInferenceStack-${DEPLOYMENT_ID}"
+if ! aws cloudformation describe-stacks --stack-name $STACK_NAME --region $AWS_REGION &> /dev/null; then
+    echo "错误: 堆栈 $STACK_NAME 不存在，无法更新。请使用 deploy.sh 进行首次部署。"
+    exit 1
+fi
+
 # 安装依赖
 echo "安装项目依赖..."
 npm install
@@ -66,12 +73,6 @@ fi
 # 部署堆栈
 echo "更新 CDK 堆栈..."
 cdk deploy --context deploymentId=$DEPLOYMENT_ID --require-approval never --region $AWS_REGION
-
-# 保存部署ID到文件（如果不是当前记录的ID）
-if [ ! -f "$DEPLOY_ID_FILE" ] || [ "$(cat $DEPLOY_ID_FILE)" != "$DEPLOYMENT_ID" ]; then
-  echo $DEPLOYMENT_ID > $DEPLOY_ID_FILE
-  echo "部署ID已更新并保存到 $DEPLOY_ID_FILE"
-fi
 
 echo "更新完成！请查看上面的输出获取资源信息。"
 echo "部署ID: $DEPLOYMENT_ID"
