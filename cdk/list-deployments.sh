@@ -3,6 +3,12 @@
 # 确保脚本在出错时停止执行
 set -e
 
+# 导入 Node.js 版本检查函数
+source "$(dirname "$0")/node-version-check.sh"
+
+# 检查 Node.js 版本
+check_node_version || exit 1
+
 echo "查询 Stable Diffusion 推理服务部署..."
 
 # 获取 AWS 区域

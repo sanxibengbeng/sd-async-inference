@@ -122,6 +122,35 @@ cdk deploy --context deploymentId=my-custom-id
 - 所有脚本都会自动检测和使用 AWS CLI 配置的默认区域
 - 如果遇到 "You must specify a region" 错误，请运行 `aws configure` 设置默认区域
 
+## Node.js 版本要求
+
+AWS CDK 需要 Node.js v18 或 v20 版本。如果您使用的是较旧版本的 Node.js（如 v16），将会收到警告并可能导致部署问题。
+
+### 安装合适的 Node.js 版本
+
+推荐使用 nvm (Node Version Manager) 来管理 Node.js 版本：
+
+1. 安装 nvm:
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+```
+
+2. 安装 Node.js v18:
+```bash
+nvm install 18
+```
+
+3. 使用 Node.js v18:
+```bash
+nvm use 18
+```
+
+### 自动版本检查
+
+所有部署脚本现在都包含 Node.js 版本检查功能，如果检测到不兼容的版本：
+- 如果安装了 nvm，脚本会尝试自动切换到 Node.js v18
+- 如果没有安装 nvm，脚本会提示您安装合适的版本
+
 ## 安全注意事项
 
 项目依赖中存在一些安全漏洞，主要来自于 AWS CDK 相关的库和其他依赖项。为了修复这些漏洞，可以运行提供的修复脚本：
