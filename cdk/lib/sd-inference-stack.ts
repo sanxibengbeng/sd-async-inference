@@ -14,8 +14,9 @@ export class SdInferenceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // Generate a unique ID for this deployment
-    const deploymentId = cdk.Names.uniqueId(this).toLowerCase().substring(0, 8);
+    // Extract the deployment ID from the stack name
+    const stackName = cdk.Stack.of(this).stackName;
+    const deploymentId = stackName.split('-').slice(-1)[0].toLowerCase();
     
     // Create DynamoDB table with unique name
     const tasksTable = new dynamodb.Table(this, 'SdTasksTable', {
