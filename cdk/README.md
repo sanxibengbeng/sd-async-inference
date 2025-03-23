@@ -1,194 +1,196 @@
-# Stable Diffusion 推理服务 CDK 部署
+# Stable Diffusion Inference Service CDK Deployment
 
-这个项目使用 AWS CDK 来部署 Stable Diffusion 推理服务所需的基础设施，包括 API Gateway、Lambda、DynamoDB、SQS、S3 和 CloudFront。
+[![en](https://img.shields.io/badge/lang-English-blue.svg)](README.md)
+[![zh-cn](https://img.shields.io/badge/语言-中文-red.svg)](README.zh-CN.md)
 
-## 特点
+This project uses AWS CDK to deploy the infrastructure required for the Stable Diffusion inference service, including API Gateway, Lambda, DynamoDB, SQS, S3, and CloudFront.
 
-- **资源名称唯一化**: 每次部署都会生成唯一的资源名称，允许在同一个 AWS 账号中多次部署
-- **一键部署**: 提供简单的部署脚本，自动完成所有步骤
-- **完整基础设施**: 包含所有必要的 AWS 资源配置
-- **部署管理**: 提供部署、更新、列表和删除脚本，方便管理多个部署
+## Features
 
-## 前置条件
+- **Unique Resource Names**: Each deployment generates unique resource names, allowing multiple deployments in the same AWS account
+- **One-Click Deployment**: Simple deployment scripts that automate all steps
+- **Complete Infrastructure**: Contains all necessary AWS resource configurations
+- **Deployment Management**: Provides deploy, update, list, and delete scripts for managing multiple deployments
 
-- Node.js (>= 14.x)
-- AWS CLI 已配置
-- AWS CDK 已安装 (`npm install -g aws-cdk`)
+## Prerequisites
+
+- Node.js (>= 18.x)
+- AWS CLI configured
+- AWS CDK installed (`npm install -g aws-cdk`)
 - TypeScript (`npm install -g typescript`)
-- jq (用于列出部署，可选)
+- jq (optional, for listing deployments)
 
-## 部署管理脚本
+## Deployment Management Scripts
 
-本项目提供了四个管理脚本，方便操作不同的部署：
+This project provides four management scripts for easy operation of different deployments:
 
-### 1. 部署新实例 (deploy.sh)
+### 1. Deploy New Instance (deploy.sh)
 
 ```bash
-# 创建新部署（自动生成部署ID）
+# Create a new deployment (auto-generate deployment ID)
 ./deploy.sh
 
-# 使用指定的部署ID创建部署
+# Create a deployment with a specified deployment ID
 ./deploy.sh my-custom-id
 ```
 
-部署完成后，部署ID会被保存到 `last_deployment_id.txt` 文件中。
+After deployment, the deployment ID is saved to the `last_deployment_id.txt` file.
 
-### 2. 更新现有部署 (update.sh)
+### 2. Update Existing Deployment (update.sh)
 
 ```bash
-# 更新上次部署的实例
+# Update the last deployed instance
 ./update.sh
 
-# 更新指定部署ID的实例
+# Update an instance with a specific deployment ID
 ./update.sh deploy-123456
 ```
 
-### 3. 列出所有部署 (list-deployments.sh)
+### 3. List All Deployments (list-deployments.sh)
 
 ```bash
 ./list-deployments.sh
 ```
 
-这将显示所有部署的堆栈名称、创建时间和最后更新时间。
+This will display all deployment stack names, creation times, and last update times.
 
-### 4. 删除部署 (destroy.sh)
+### 4. Delete Deployment (destroy.sh)
 
 ```bash
-# 删除上次部署的实例
+# Delete the last deployed instance
 ./destroy.sh
 
-# 删除指定部署ID的实例
+# Delete an instance with a specific deployment ID
 ./destroy.sh deploy-123456
 ```
 
-## 手动部署步骤
+## Manual Deployment Steps
 
-如果你想手动控制部署过程：
+If you want to manually control the deployment process:
 
-1. 安装依赖
+1. Install dependencies
 
 ```bash
 cd cdk
 npm install
 ```
 
-2. 编译 TypeScript 代码
+2. Compile TypeScript code
 
 ```bash
 npm run build
 ```
 
-3. 引导 CDK (如果是首次在此 AWS 账户/区域中使用 CDK)
+3. Bootstrap CDK (if using CDK for the first time in this AWS account/region)
 
 ```bash
 cdk bootstrap
 ```
 
-4. 部署堆栈（可以指定自定义的部署 ID）
+4. Deploy the stack (you can specify a custom deployment ID)
 
 ```bash
 cdk deploy --context deploymentId=my-custom-id
 ```
 
-5. 确认部署
+5. Confirm deployment
 
-部署过程中，CDK 会请求确认创建 IAM 角色和安全相关资源的权限，输入 'y' 确认。
+During deployment, CDK will request confirmation to create IAM roles and security-related resources. Enter 'y' to confirm.
 
-## 资源说明
+## Resource Description
 
-此 CDK 项目创建以下资源，所有资源名称都包含唯一的部署 ID：
+This CDK project creates the following resources, all resource names contain a unique deployment ID:
 
-- **DynamoDB 表**: `sd-tasks-{deploymentId}` - 存储任务信息
-- **SQS 队列**: `sd-task-queue-{deploymentId}` - 用于存储待处理的推理任务
-- **S3 存储桶**: `sd-images-{deploymentId}-{accountId}` - 存储生成的图片
-- **CloudFront 分发**: 提供图片的快速访问
-- **Lambda 函数**:
-  - `SubmitTaskFunction` - 处理任务提交
-  - `TaskInfoFunction` - 查询任务状态
-- **API Gateway**: `sdapi-{deploymentId}` - 提供 REST API 接口
-  - POST /task: 提交任务
-  - GET /task?taskId={id}: 查询任务状态
-- **IAM 角色**: `sd-inference-ec2-role-{deploymentId}` - 为 EC2 推理实例提供所需权限
+- **DynamoDB Table**: `sd-tasks-{deploymentId}` - Stores task information
+- **SQS Queue**: `sd-task-queue-{deploymentId}` - For storing pending inference tasks
+- **S3 Bucket**: `sd-images-{deploymentId}-{accountId}` - Stores generated images
+- **CloudFront Distribution**: Provides fast access to images
+- **Lambda Functions**:
+  - `TaskHandlerFunction` - Handles task submission and status queries
+- **API Gateway**: `sdapi-{deploymentId}` - Provides REST API interface
+  - POST /task: Submit task
+  - GET /task?taskId={id}: Query task status
+- **IAM Role**: `sd-inference-ec2-role-{deploymentId}` - Provides necessary permissions for EC2 inference instances
 
-## 多次部署
+## Multiple Deployments
 
-由于所有资源名称都包含唯一标识符，你可以在同一个 AWS 账号中多次部署此堆栈。每次部署都会创建一组全新的资源，互不干扰。
+Since all resource names contain unique identifiers, you can deploy this stack multiple times in the same AWS account. Each deployment will create a completely new set of resources that don't interfere with each other.
 
-## 注意事项
+## Notes
 
-- 此部署仅包含基础设施部分，不包括 EC2 Spot Fleet 的配置和自动扩展部分
-- 生产环境中应调整资源的删除策略和安全设置
-- Lambda 函数代码需要从项目的 `server/lambda` 目录中获取
-- 所有脚本都会自动检测和使用 AWS CLI 配置的默认区域
-- 如果遇到 "You must specify a region" 错误，请运行 `aws configure` 设置默认区域
+- This deployment only includes the infrastructure part, not the EC2 Spot Fleet configuration and auto-scaling part
+- Resource deletion policies and security settings should be adjusted for production environments
+- Lambda function code needs to be obtained from the project's `server/lambda` directory
+- All scripts automatically detect and use the default region configured in AWS CLI
+- If you encounter a "You must specify a region" error, run `aws configure` to set the default region
 
-## 环境设置
+## Environment Setup
 
-### Node.js 版本要求
+### Node.js Version Requirements
 
-AWS CDK 需要 Node.js v18 或 v20 版本。如果您使用的是较旧版本的 Node.js（如 v16），将会收到警告并可能导致部署问题。
+AWS CDK requires Node.js v18 or v20. If you're using an older version of Node.js (like v16), you'll receive warnings and may encounter deployment issues.
 
-### 快速设置
+### Quick Setup
 
-我们提供了一个自动化脚本来设置正确的 Node.js 环境：
+We provide an automated script to set up the correct Node.js environment:
 
 ```bash
-# 设置 Node.js 环境
+# Set up Node.js environment
 ./setup-node.sh
 
-# 修复安全漏洞
+# Fix security vulnerabilities
 ./fix-vulnerabilities.sh
 ```
 
-### 手动设置
+### Manual Setup
 
-如果您想手动设置环境，请按照以下步骤操作：
+If you want to set up the environment manually, follow these steps:
 
-1. 安装 nvm (Node Version Manager):
+1. Install nvm (Node Version Manager):
 ```bash
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 ```
 
-2. 加载 nvm (可能需要重新打开终端):
+2. Load nvm (may need to reopen terminal):
 ```bash
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 ```
 
-3. 安装 Node.js v18:
+3. Install Node.js v18:
 ```bash
 nvm install 18
 ```
 
-4. 使用 Node.js v18:
+4. Use Node.js v18:
 ```bash
 nvm use 18
 ```
 
-5. 设置为默认版本:
+5. Set as default version:
 ```bash
 nvm alias default 18
 ```
 
-### 自动版本检查
+### Automatic Version Check
 
-所有部署脚本现在都包含 Node.js 版本检查功能，如果检测到不兼容的版本：
-- 如果安装了 nvm，脚本会尝试自动切换到 Node.js v18
-- 如果没有安装 nvm，脚本会提示您安装合适的版本
+All deployment scripts now include Node.js version check functionality. If an incompatible version is detected:
+- If nvm is installed, the script will try to automatically switch to Node.js v18
+- If nvm is not installed, the script will prompt you to install the appropriate version
 
-## 安全注意事项
+## Security Considerations
 
-项目依赖中存在一些安全漏洞，主要来自于 AWS CDK 相关的库和其他依赖项。为了修复这些漏洞，可以运行提供的修复脚本：
+There are some security vulnerabilities in the project dependencies, mainly from AWS CDK-related libraries and other dependencies. To fix these vulnerabilities, you can run the provided fix script:
 
 ```bash
 cd cdk
 ./fix-vulnerabilities.sh
 ```
 
-这个脚本会：
-1. 更新 AWS CDK 相关依赖到最新版本
-2. 更新其他有漏洞的依赖
-3. 运行 npm audit fix 尝试自动修复
-4. 如果还有高危或严重漏洞，尝试强制修复
+This script will:
+1. Update AWS CDK-related dependencies to the latest versions
+2. Update other dependencies with vulnerabilities
+3. Run npm audit fix to attempt automatic fixes
+4. If there are still high or critical vulnerabilities, attempt forced fixes
 
-请注意，强制更新可能会导致不兼容问题，更新后请确保项目仍然能够正常工作。
+Please note that forced updates may cause compatibility issues. After updating, ensure the project still works properly.
