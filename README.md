@@ -32,7 +32,7 @@ This solution is built on AWS foundational services:
 - Amazon SQS
 - Amazon S3
 - Amazon DynamoDB
-- Amazon EC2 Spot Fleet
+- Amazon EC2 Auto Scaling Group
 
 The architecture follows an asynchronous processing pattern:
 1. Client submits inference tasks via API Gateway
@@ -57,6 +57,22 @@ curl -X POST https://${APIGatewayID}.execute-api.${region}.amazonaws.com/task \
 GET https://${APIGatewayID}.execute-api.${region}.amazonaws.com/task?taskId=${taskId}
 ```
 
+## Deployment Options
+
+This project supports two deployment options for the inference cluster:
+
+1. **EC2 Auto Scaling Group Deployment** - Recommended for production use
+   - Containerized deployment with Docker
+   - Gradual deployment with canary testing
+   - Automatic rollback capability
+   - Detailed monitoring and health checks
+   - [Learn more about EC2 deployment](./docs/ec2-deployment.md)
+
+2. **Basic Infrastructure Deployment** - Suitable for testing and development
+   - Deploys only the core infrastructure components
+   - Manual setup of inference instances required
+   - [Basic deployment instructions](./cdk/README.md)
+
 ## Project Structure
 - `cdk/`: AWS CDK infrastructure code and deployment scripts
 - `server/`: Server-side components
@@ -64,6 +80,7 @@ GET https://${APIGatewayID}.execute-api.${region}.amazonaws.com/task?taskId=${ta
   - `api-scheduler/`: Inference task scheduler
 - `assets/`: Project resource files
 - `docs/`: Additional documentation
+  - `ec2-deployment.md`: EC2 Auto Scaling Group deployment guide
 
 ## Contributing
 Pull Requests or Issues are welcome to help improve the project.
