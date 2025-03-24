@@ -66,7 +66,7 @@ This project supports two deployment options for the inference cluster:
    - Gradual deployment with canary testing
    - Automatic rollback capability
    - Detailed monitoring and health checks
-   - [Learn more about EC2 deployment](./docs/ec2-deployment.md)
+   - [Learn more about EC2 deployment](./server/api-scheduler/docs/deployment-guide.md)
 
 2. **Basic Infrastructure Deployment** - Suitable for testing and development
    - Deploys only the core infrastructure components
@@ -79,8 +79,11 @@ This project supports two deployment options for the inference cluster:
   - `lambda/`: Lambda function code
   - `api-scheduler/`: Inference task scheduler
 - `assets/`: Project resource files
-- `docs/`: Additional documentation
-  - `ec2-deployment.md`: EC2 Auto Scaling Group deployment guide
+
+## Component Documentation
+- [API Scheduler Documentation](./server/api-scheduler/README.md)
+- [Lambda Function Documentation](./server/lambda/task_handler/README.md)
+- [CDK Deployment Guide](./cdk/README.md)
 
 ## Contributing
 Pull Requests or Issues are welcome to help improve the project.

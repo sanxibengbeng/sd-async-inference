@@ -1,4 +1,4 @@
-# Stable Diffusion Asynchronous Inference Service - EC2 AutoScalingGroup 部署方案
+# Stable Diffusion 异步推理服务 - EC2 AutoScalingGroup 部署方案
 
 ## 架构概述
 
