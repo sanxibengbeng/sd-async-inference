@@ -1,7 +1,54 @@
+# OS generated files
 .DS_Store
-**/*.zip
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Node.js
 **/node_modules
-**/__pycache__/*.pyc
-**/__pycache__/**
+npm-debug.log
+yarn-error.log
+
+# Python
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# AWS CDK
+cdk.out/
+cdk.context.json
+.cdk.staging/
+cdk-outputs.json
+
+# Project specific
+**/*.zip
 *.swp
 config.ini
+last_deployment_id.txt
+logs/
+backups/
+
+# Ignore AmazonQ.md files
+AmazonQ.md
+**/AmazonQ.md
+
+# Keep these files
+!server/api-scheduler/README.md
+!server/lambda/task_handler/README.md
+!server/README.md
