@@ -1,0 +1,9 @@
+[aws]
+region = us-east-1
+queue_url = sd-task-queue-deploymentid
+table_name = sd-tasks-deploymentid
+bucket_name = sd-images-deploymentid-12345
+
+[api]
+port = 8080
+workers = 4
